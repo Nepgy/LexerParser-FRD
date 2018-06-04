@@ -78,7 +78,7 @@ def createAutomatas():
 
 print (tokenizer('{'))
 
-# #Francisco dando las respuestas xd
+# Codigo dado en clase
 # def lex (src)
 #     tokens = []
 #     src = src + ""
