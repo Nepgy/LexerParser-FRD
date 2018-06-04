@@ -1,0 +1,51 @@
+/*
+    El orden de esta lista define que token se elije si una expresion 
+    coincide en dos definiciones (Tiene prioridad la que este definida mas arriba)
+*/
+let definiciones = [
+    [
+        'OpRel',
+        '==',
+        transicionDefault,
+    ],
+    [
+        'OpRel',
+        '<=',
+        transicionDefault,
+    ],
+    [
+        'OpRel',
+        '>=',
+        transicionDefault,
+    ],
+    [
+        'ParOp',
+        '(',
+        transicionDefault,
+    ],
+    [
+        'ParCl',
+        ')',
+        transicionDefault,
+    ],
+    [
+        'BrcOp',
+        '{',
+        transicionDefault,
+    ],
+    [
+        'BrcCl',
+        '}',
+        transicionDefault,
+    ],
+    [
+        'If',
+        'IF',
+        transicionDefault,
+    ],
+    [
+        'Id',
+        'a',
+        transicionAlfaNumerica,
+    ],
+];

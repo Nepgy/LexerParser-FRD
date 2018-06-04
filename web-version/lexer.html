@@ -1,0 +1,63 @@
+<html>
+    <body>
+        <table>
+            <tr>
+                <td>
+                    Escriba: 
+                    <textarea rows="4" cols="50" onchange="handleText(event)"></textarea>
+                </td>
+                <td> o </td>
+                <td>
+                    <input type="file" accept="text/plain" onchange="handleFile(event)"">
+                </td>
+            </tr>
+        </table>
+        <!-- <input type="file" accept="text/plain" onchange='handleFile(event)'><br>
+        <div id='output'> -->
+            <table id="tokens" border="1">
+                <thead>
+                    <th>Token</th>
+                    <th>Contenido</th>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+    </body>
+</html>
+
+<script type="text/javascript" src="transiciones.js"></script>
+<script type="text/javascript" src="definiciones.js"></script>
+<script type="text/javascript" src="lexer.js"></script>
+
+<script>
+    function handleFile (event) {
+        let input = event.target;
+
+        let reader = new FileReader();
+        reader.onload = function(){
+            coso = reader.result;
+            let text = loadTokensTable(Lexer.main(reader.result));
+            let node = document.querySelector('#tokens tbody');
+            node.innerHTML = text;
+        };
+        reader.readAsText(input.files[0]);
+    };
+
+    function handleText (event) {
+        let text = loadTokensTable(Lexer.main(event.target.value));
+        let node = document.querySelector('#tokens tbody');
+        node.innerHTML = text;
+    }
+
+    function loadTokensTable(tokens) {
+        let html = '';
+        if (Array.isArray(tokens)) {
+            for (x in tokens) {
+                html += `<tr><td>${tokens[x][0]}</td><td>${tokens[x][1]}</td></tr>`;
+            }
+        } else {
+            html = `<td colspan="2">${tokens}</td>`;
+        }
+        return html;
+    }
+</script>
