@@ -63,7 +63,7 @@ def createAutomatas():
 
 
 
-# #Francisco dando las respuestas xd
+
 # def lex (src)
 #     tokens = []
 #     src = src + ""
