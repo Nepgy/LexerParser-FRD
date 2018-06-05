@@ -4,8 +4,33 @@
 */
 let definiciones = [
     [
+        'Asign',
+        '=',
+        transicionDefault,
+    ],
+    [
+        'Asign',
+        ':=',
+        transicionDefault,
+    ],
+    [
+        'OpRel',
+        '<',
+        transicionDefault,
+    ],
+    [
+        'OpRel',
+        '>',
+        transicionDefault,
+    ],
+    [
         'OpRel',
         '==',
+        transicionDefault,
+    ],
+    [
+        'OpRel',
+        '!=',
         transicionDefault,
     ],
     [
@@ -16,6 +41,36 @@ let definiciones = [
     [
         'OpRel',
         '>=',
+        transicionDefault,
+    ],
+    [
+        'OpMat',
+        '+',
+        transicionDefault,
+    ],
+    [
+        'OpMat',
+        '-',
+        transicionDefault,
+    ],
+    [
+        'OpMat',
+        '*',
+        transicionDefault,
+    ],
+    [
+        'OpMat',
+        '/',
+        transicionDefault,
+    ],
+    [
+        'Punct',
+        ',',
+        transicionDefault,
+    ],
+    [
+        'Punct',
+        ';',
         transicionDefault,
     ],
     [
@@ -39,13 +94,38 @@ let definiciones = [
         transicionDefault,
     ],
     [
-        'If',
+        'Cond',
         'IF',
+        transicionDefault,
+    ],
+    [
+        'Type',
+        'INT',
+        transicionDefault,
+    ],
+    [
+        'Type',
+        'FLOAT',
+        transicionDefault,
+    ],
+    [
+        'Loop',
+        'FOR',
+        transicionDefault,
+    ],
+    [
+        'Loop',
+        'WHILE',
         transicionDefault,
     ],
     [
         'Id',
         'a',
-        transicionAlfaNumerica,
+        transicionAlfabetica,
+    ],
+    [
+        'Num',
+        'a',
+        transicionNumerica,
     ],
 ];
