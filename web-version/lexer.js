@@ -102,7 +102,10 @@ var Lexer = Lexer || (function () {
                         ++line;
                         position = -1;
                     }
-                    if (buffer === '' && Helpers.isSpace(src[x])) continue;
+                    if (buffer === '' && Helpers.isSpace(src[x])) {
+                        ++position;
+                        continue;
+                    }
                     allTrampas = true;
                     let nuevosAceptados = []
                     automatas.forEach(
