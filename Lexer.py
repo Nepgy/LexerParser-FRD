@@ -1,35 +1,54 @@
-class Automata:
-    def __init__(self, tuplaToken):
-        self.tuplaToken = tuplaToken
-        self.estados = []
-        self.estadoInicial = None
-        self.estadoActual = None
+# class Automata:
+#     def __init__(self, tuplaToken):
+#         self.tuplaToken = tuplaToken
+#         self.estados = []
+#         self.estadoInicial = None
+#         self.estadoActual = None
+#
+#         self.crearEstadosNecesarios(tuplaToken[1])
+#         self.reset()
+#
+#     def crearEstadosNecesarios(self, estados):
+#         for index, estado in enumerate(estados[::-1]): #Invierto la cadena, para que el primer caracter sea el estado aceptado.
+#             if (index == 0):
+#                 self.estados.append(Estado(estado, True, None))
+#             else:
+#                 estadoSiguiente = self.estados[-1]
+#                 self.estados.append(Estado(estado, False, (estadoSiguiente.getCodigo(), estadoSiguiente)))
+#         estadoSiguiente = self.estados[-1]
+#         self.estadoInicial = Estado(estado, False, (estadoSiguiente.getCodigo(), estadoSiguiente))
+#
+#     def reset(self):
+#         self.estadoActual = self.estadoInicial
+#
+#     def consume(self, char):
+#         self.estadoActual = self.estadoActual.input(char)
+#
+#     def isActualAceptado(self):
+#         return self.estadoActual.isAceptado()
+#
+#     def getTuplaToken(self):
+#         return self.tuplaToken
+class AutomataBetter:
+    def __init__(self, token, estados, estadoInicial, funcionTransicion, estadosAceptados):
+        self.token = token
+        self.estados = estados
+        self.estadoInicial = estadoInicial
+        self.funcionTransicion = funcionTransicion
+        self.estadoActual = estadoActual
+        self.estadosAceptados = estadosAceptados
 
-        self.crearEstadosNecesarios(tuplaToken[1])
-        self.reset()
+    def input(self, char):
+        self.estadoActual = self.funcionTransicion(char)
 
-    def crearEstadosNecesarios(self, estados):
-        for index, estado in enumerate(estados[::-1]): #Invierto la cadena, para que el primer caracter sea el estado aceptado.
-            if (index == 0):
-                self.estados.append(Estado(estado, True, None))
-            else:
-                estadoSiguiente = self.estados[-1]
-                self.estados.append(Estado(estado, False, (estadoSiguiente.getCodigo(), estadoSiguiente)))
-        estadoSiguiente = self.estados[-1]
-        self.estadoInicial = Estado(estado, False, (estadoSiguiente.getCodigo(), estadoSiguiente))
+    def estadosAceptados(self):
+        return self.estadoActual.estadosAceptados()
 
     def reset(self):
         self.estadoActual = self.estadoInicial
 
-    def consume(self, char):
-        self.estadoActual = self.estadoActual.input(char)
-
-    def isActualAceptado(self):
-        return self.estadoActual.isAceptado()
-
-    def getTuplaToken(self):
-        return self.tuplaToken
-
+    def trampa(self):
+        return self.estadoActual == none #para identificar el estado trampa
 
 class Estado:
     def __init__(self, codigo, aceptado = False, transiciones = []):
