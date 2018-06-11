@@ -1,34 +1,73 @@
-class Automata:
-    def __init__(self, tuplaToken):
-        self.tuplaToken = tuplaToken
-        self.estados = []
-        self.estadoInicial = None
-        self.estadoActual = None
-
-        self.crearEstadosNecesarios(tuplaToken[1])
+# class Automata:
+#     def __init__(self, tuplaToken):
+#         self.tuplaToken = tuplaToken
+#         self.estados = []
+#         self.estadoInicial = None
+#         self.estadoActual = None
+#
+#         self.crearEstadosNecesarios(tuplaToken[1])
+#         self.reset()
+#
+#     def crearEstadosNecesarios(self, estados):
+#         for index, estado in enumerate(estados[::-1]): #Invierto la cadena, para que el primer caracter sea el estado aceptado.
+#             if (index == 0):
+#                 self.estados.append(Estado(estado, True, None))
+#             else:
+#                 estadoSiguiente = self.estados[-1]
+#                 self.estados.append(Estado(estado, False, (estadoSiguiente.getCodigo(), estadoSiguiente)))
+#         estadoSiguiente = self.estados[-1]
+#         self.estadoInicial = Estado(estado, False, (estadoSiguiente.getCodigo(), estadoSiguiente))
+#
+#     def reset(self):
+#         self.estadoActual = self.estadoInicial
+#
+#     def consume(self, char):
+#         self.estadoActual = self.estadoActual.input(char)
+#
+#     def isActualAceptado(self):
+#         return self.estadoActual.isAceptado()
+#
+#     def getTuplaToken(self):
+#         return self.tuplaToken
+class AutomataBetter:
+    def __init__(self, token, estados, estadoInicial, funcionTransicion, estadosAceptados):
+        self.token = token
+        self.estados = estados
+        self.estadoInicial = estadoInicial
+        self.funcionTransicion = funcionTransicion
+        self.estadosAceptados = estadosAceptados
         self.reset()
 
-    def crearEstadosNecesarios(self, estados):
-        for index, estado in enumerate(estados[::-1]): #Invierto la cadena, para que el primer caracter sea el estado aceptado.
-            if (index == 0):
-                self.estados.append(Estado(estado, True, None))
-            else:
-                estadoSiguiente = self.estados[-1]
-                self.estados.append(Estado(estado, False, (estadoSiguiente.getCodigo(), estadoSiguiente)))
-        estadoSiguiente = self.estados[-1]
-        self.estadoInicial = Estado(estado, False, (estadoSiguiente.getCodigo(), estadoSiguiente))
+    def input(self, char):
+        self.estadoActual = self.funcionTransicion(self, char)
+
+    def estadosAceptados(self):
+        return self.estadoActual in self.estadosAceptados
 
     def reset(self):
         self.estadoActual = self.estadoInicial
 
-    def consume(self, char):
-        self.estadoActual = self.estadoActual.input(char)
+    def trampa(self):
+        return self.estadoActual is None #para identificar el estado trampa
 
-    def isActualAceptado(self):
-        return self.estadoActual.isAceptado()
+def transicionDefault(self, input):
 
-    def getTuplaToken(self):
-        return self.tuplaToken
+    if len(self.estados) <= self.estadoActual + 1:
+        print("1")
+        return None
+
+    if self.estadoActual is None:
+        print("2")
+        return None
+    print(self.estados[self.estadoActual + 1])
+    print(input)
+    if self.estados[self.estadoActual + 1] == input:
+        print("3")
+        return self.estadoActual + 1
+    else:
+        print("4")
+        return None
+
 
 
 class Estado:
@@ -67,18 +106,8 @@ def tokenizer(string): # Todo arranca aca
     return tokens
 
 
-def createAutomatas():
-    expresionesReservadas = [("ParOp", "("), ("ParClo", ")"), ("KeyOp", "{"), ("KeyClo", "}"), ("Sum", "+"), ("Mult", "*")] #Estos son solo algunos casos de pruebas
-    automatas =[]
+#[("ParOp", "("), ("ParClo", ")"), ("KeyOp", "{"), ("KeyClo", "}"), ("Sum", "+"), ("Mult", "*")]
 
-    for i in expresionesReservadas:
-        automatas.append(Automata(i))
-
-    return automatas
-
-print (tokenizer('{'))
-
-# Codigo dado en clase
 # def lex (src)
 #     tokens = []
 #     src = src + ""
