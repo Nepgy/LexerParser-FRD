@@ -42,13 +42,17 @@ class AutomataBetter:
         self.estadoActual = self.funcionTransicion(char)
 
     def estadosAceptados(self):
-        return self.estadoActual.estadosAceptados()
+        return self.estadoActual in self.estadosAceptados
 
     def reset(self):
         self.estadoActual = self.estadoInicial
 
     def trampa(self):
-        return self.estadoActual == none #para identificar el estado trampa
+        return self.estadoActual is None #para identificar el estado trampa
+
+
+
+
 
 class Estado:
     def __init__(self, codigo, aceptado = False, transiciones = []):
@@ -97,7 +101,7 @@ def createAutomatas():
 
 print (tokenizer('{'))
 
-# Codigo dado en clase
+
 # def lex (src)
 #     tokens = []
 #     src = src + ""
