@@ -35,11 +35,11 @@ class AutomataBetter:
         self.estados = estados
         self.estadoInicial = estadoInicial
         self.funcionTransicion = funcionTransicion
-        self.estadoActual = estadoActual
         self.estadosAceptados = estadosAceptados
+        self.reset()
 
     def input(self, char):
-        self.estadoActual = self.funcionTransicion(char)
+        self.estadoActual = self.funcionTransicion(self, char)
 
     def estadosAceptados(self):
         return self.estadoActual in self.estadosAceptados
@@ -50,7 +50,23 @@ class AutomataBetter:
     def trampa(self):
         return self.estadoActual is None #para identificar el estado trampa
 
+def transicionDefault(self, input):
 
+    if len(self.estados) <= self.estadoActual + 1:
+        print("1")
+        return None
+
+    if self.estadoActual is None:
+        print("2")
+        return None
+    print(self.estados[self.estadoActual + 1])
+    print(input)
+    if self.estados[self.estadoActual + 1] == input:
+        print("3")
+        return self.estadoActual + 1
+    else:
+        print("4")
+        return None
 
 
 
@@ -90,17 +106,7 @@ def tokenizer(string): # Todo arranca aca
     return tokens
 
 
-def createAutomatas():
-    expresionesReservadas = [("ParOp", "("), ("ParClo", ")"), ("KeyOp", "{"), ("KeyClo", "}"), ("Sum", "+"), ("Mult", "*")] #Estos son solo algunos casos de pruebas
-    automatas =[]
-
-    for i in expresionesReservadas:
-        automatas.append(Automata(i))
-
-    return automatas
-
-print (tokenizer('{'))
-
+#[("ParOp", "("), ("ParClo", ")"), ("KeyOp", "{"), ("KeyClo", "}"), ("Sum", "+"), ("Mult", "*")]
 
 # def lex (src)
 #     tokens = []
