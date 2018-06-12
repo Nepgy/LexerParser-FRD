@@ -1,117 +1,92 @@
 class Automata:
-    def __init__(self, tuplaToken):
-        self.tuplaToken = tuplaToken
-        self.estados = []
-        self.estadoInicial = None
-        self.estadoActual = None
-
-        self.crearEstadosNecesarios(tuplaToken[1])
+    def __init__(self, identificador, estados, funcionTransicion, estadosAceptados):
+        self.identificador = identificador
+        self.estados = estados
+        self.funcionTransicion = funcionTransicion
+        self.estadosAceptados = estadosAceptados
         self.reset()
 
-    def crearEstadosNecesarios(self, estados):
-        for index, estado in enumerate(estados[::-1]): #Invierto la cadena, para que el primer caracter sea el estado aceptado.
-            if (index == 0):
-                self.estados.append(Estado(estado, True, None))
-            else:
-                estadoSiguiente = self.estados[-1]
-                self.estados.append(Estado(estado, False, (estadoSiguiente.getCodigo(), estadoSiguiente)))
-        estadoSiguiente = self.estados[-1]
-        self.estadoInicial = Estado(estado, False, (estadoSiguiente.getCodigo(), estadoSiguiente))
-
-    def reset(self):
-        self.estadoActual = self.estadoInicial
-
-    def consume(self, char):
-        self.estadoActual = self.estadoActual.input(char)
-
-    def isActualAceptado(self):
-        return self.estadoActual.isAceptado()
-
-    def getTuplaToken(self):
-        return self.tuplaToken
-
-
-class Estado:
-    def __init__(self, codigo, aceptado = False, transiciones = []):
-        self.transiciones = transiciones
-        self.aceptado = aceptado
-        self.codigo = codigo
-
     def input(self, char):
-        if self.transiciones == None:  #Si la transicion es none, significa que es el estado trampa y es su estado siguiente.
-            return self
-        else:
-            return self.getTransicionPara(char) # Devuelve la transicion correspondiente al caracter que recibe. Falta definirla
-
-    def addTransicion(self, tuplaTransicion):
-        self.transiciones.append(tuplaTransicion)
+        self.estadoActual = self.funcionTransicion(self.estados, self.estadoActual, char)
 
     def isAceptado(self):
-        return self.aceptado
+        return self.estadoActual in self.estadosAceptados
 
-    def getCodigo(Self):
-        return self.codigo
+    def reset(self):
+        self.estadoActual = 0
+
+    def trampa(self):
+        return self.estadoActual is None #para identificar el estado trampa
+
+def transicionDefault(estados, estadoActual, input):
+
+    if estadoActual is None:
+        return None
+
+    if len(estados) <= estadoActual + 1:
+        return None
+
+    if estados[estadoActual + 1] == input:
+        return estadoActual + 1
+    else:
+        return None
 
 def tokenizer(string): # Todo arranca aca
+
     automatas = createAutomatas()
     tokens = []
+    aceptados = []
+    string = string + " "
+    acumuladorInputs = ""
+
     for char in string:
-        for x in automatas:
-            if (x.isActualAceptado()):
-                tokens.append(x.getTuplaToken())
-                for y in automatas:
-                    y.reset()
+
+        nuevosAceptados = []
+        if  acumuladorInputs == "" and char.isspace():
+            continue
+
+        for automata in automatas:
+            automata.input(char)
+            if automata.isAceptado():
+                nuevosAceptados.append(automata)
+
+        todosTrampa = True
+        for automata in automatas:
+            if not automata.trampa():
+                todosTrampa = False
                 break
-            x.consume(char)
+        print ('--------------------------------------')
+        if todosTrampa:
+            print(acumuladorInputs)
+            print(aceptados)
+            print(nuevosAceptados)
+            print(tokens)
+            if acumuladorInputs == "":
+                return "Error"
+            else:
+
+                tokens.append((aceptados[0].identificador, acumuladorInputs))
+                for automata in automatas:
+                    automata.reset()
+                aceptados = []
+                acumuladorInputs = ""
+
+                if not char.isspace():
+                    for automata in automatas:
+                        automata.input(char)
+                        if automata.isAceptado():
+                            nuevosAceptados.append(automata)
+
+        acumuladorInputs += char.strip()
+        aceptados = nuevosAceptados
 
     return tokens
 
-
 def createAutomatas():
-    expresionesReservadas = [("ParOp", "("), ("ParClo", ")"), ("KeyOp", "{"), ("KeyClo", "}"), ("Sum", "+"), ("Mult", "*")] #Estos son solo algunos casos de pruebas
-    automatas =[]
-
-    for i in expresionesReservadas:
-        automatas.append(Automata(i))
-
+    automatas = []
+    for x in definicionTokens:
+        automatas.append(Automata(x[0], "$" + x[1], x[2], [len(x[1])]))
     return automatas
 
-print (tokenizer('{'))
 
-# Codigo dado en clase
-# def lex (src)
-#     tokens = []
-#     src = src + ""
-#     i = 0
-#     start = 0
-#     state = 0
-#     Whille i < len(src):
-#         c = src[i]
-#         x = src[start: i + 1]
-#         if state == 0:
-#             if c.isspace():
-#                 i +=  1
-#                 state = 0
-#             else:
-#                 start = i
-#                 state = 1
-#         if state == 1:
-#             if es_aceptado(x) or not c.isspace():
-#                 i += 1
-#                 state = 1
-#             else:
-#                 i -= 1
-#                 state = 2
-# #Make spaghetti code
-# def es_aceptado(x):
-#     candidatos = [TokenType
-#         for (TokenType, afd)
-#         in TT
-#         if afd(x)
-#         ]
-#     if len(candidatos) > 0
-#         return True
-#     else:
-#         return False
-#
-# return (True, candidatos[0])
+definicionTokens = [("ParOp", "(", transicionDefault), ("ParClo", ")", transicionDefault), ("KeyOp", "{", transicionDefault), ("KeyClo", "}", transicionDefault), ("Sum", "+", transicionDefault), ("Mult", "*", transicionDefault)]
