@@ -97,12 +97,30 @@ def createAutomatas():
         automatas.append(Automata(idToken, estados, funcionTransicion, estadosAceptados))
     return automatas
 
-
+#TODO Agregar definiciones de tokens que no utilizan transicionDefault
 definicionTokens = [
-    ("ParOp", "(", transicionDefault),
-    ("ParClo", ")", transicionDefault),
-    ("KeyOp", "{", transicionDefault),
-    ("KeyClo", "}", transicionDefault),
-    ("Sum", "+", transicionDefault),
-    ("Mult", "*", transicionDefault)
+    ("Asign", "=", transicionDefault),
+    ("Asign", ":=", transicionDefault),
+    ("OpRel", "<", transicionDefault),
+    ("OpRel", ">", transicionDefault),
+    ("OpRel", "==", transicionDefault),
+    ("OpRel", "!=", transicionDefault),
+    ("OpRel", "<=", transicionDefault),
+    ("OpRel", ">=", transicionDefault),
+    ("OpMat", "+", transicionDefault),
+    ("OpMat", "-", transicionDefault),
+    ("OpMat", "*", transicionDefault),
+    ("OpMat", "/", transicionDefault),
+    ("Punct", ",", transicionDefault),
+    ("Punct", ";", transicionDefault),
+    ("ParOp", "(",transicionDefault),
+    ("ParCl", ")",transicionDefault),
+    ("BrcOp", "{",transicionDefault),
+    ("BrcCl", "}", transicionDefault),
+    ("Cond", "if", transicionDefault),
+    ("Type", "int", transicionDefault),
+    ("Type", "float", transicionDefault),
+    ("Loop", "for", transicionDefault),
+    ("Loop", "while", transicionDefault)
 ]
+
