@@ -12,4 +12,22 @@ const transicionAlfaNumerica = function (input) {
             : this.estadoActual === 0 
                 ? ++this.estadoActual
                 : this.estadoActual;
-}; 
+};
+
+const transicionAlfabetica = function (input) {
+    return  this.estadoActual === null 
+            || !Helpers.isAlphabetic(input) 
+            ? null //Null es el estado trampa
+            : this.estadoActual === 0 
+                ? ++this.estadoActual
+                : this.estadoActual;
+};
+
+const transicionNumerica = function (input) {
+    return  this.estadoActual === null 
+            || !Helpers.isNumeric(input) 
+            ? null //Null es el estado trampa
+            : this.estadoActual === 0 
+                ? ++this.estadoActual
+                : this.estadoActual;
+};
