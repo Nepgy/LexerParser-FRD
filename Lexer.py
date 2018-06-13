@@ -89,4 +89,11 @@ def createAutomatas():
     return automatas
 
 
-definicionTokens = [("ParOp", "(", transicionDefault), ("ParClo", ")", transicionDefault), ("KeyOp", "{", transicionDefault), ("KeyClo", "}", transicionDefault), ("Sum", "+", transicionDefault), ("Mult", "*", transicionDefault)]
+definicionTokens = [
+    ("ParOp", "(", transicionDefault),
+    ("ParClo", ")", transicionDefault),
+    ("KeyOp", "{", transicionDefault),
+    ("KeyClo", "}", transicionDefault),
+    ("Sum", "+", transicionDefault),
+    ("Mult", "*", transicionDefault)
+]
