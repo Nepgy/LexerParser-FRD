@@ -15,8 +15,10 @@ class Automata:
     def reset(self):
         self.estadoActual = 0
 
+
     def trampa(self):
-        return self.estadoActual is None #para identificar el estado trampa
+        # Se utiliza None para identificar el estado trampa
+        return self.estadoActual is None
 
 def transicionDefault(estados, estadoActual, input):
 
@@ -31,11 +33,14 @@ def transicionDefault(estados, estadoActual, input):
     else:
         return None
 
-def tokenizer(string): # Todo arranca aca
+# Todo arranca aca
+def tokenizer(string):
 
     automatas = createAutomatas()
     tokens = []
     aceptados = []
+    # Se agrega un espacio al final de la cadena para generar que todos los automatas caigan
+    # al estado trampa antes de terminar la ejecucion del lexer
     string = string + " "
     acumuladorInputs = ""
 
@@ -55,12 +60,8 @@ def tokenizer(string): # Todo arranca aca
             if not automata.trampa():
                 todosTrampa = False
                 break
-        print ('--------------------------------------')
+
         if todosTrampa:
-            print(acumuladorInputs)
-            print(aceptados)
-            print(nuevosAceptados)
-            print(tokens)
             if acumuladorInputs == "":
                 return "Error"
             else:
@@ -77,6 +78,9 @@ def tokenizer(string): # Todo arranca aca
                         if automata.isAceptado():
                             nuevosAceptados.append(automata)
 
+
+        # Se utiliza strip() para no agregar espacios ya que NO es util tenerlos en cuenta a la
+        # hora de saber si hemos consumido caracteres luego de haber agregado un token a la lista 
         acumuladorInputs += char.strip()
         aceptados = nuevosAceptados
 
