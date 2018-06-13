@@ -84,8 +84,13 @@ def tokenizer(string): # Todo arranca aca
 
 def createAutomatas():
     automatas = []
-    for x in definicionTokens:
-        automatas.append(Automata(x[0], "$" + x[1], x[2], [len(x[1])]))
+    for definicion in definicionTokens:
+        idToken = definicion[0]
+        # Agrego $ como estado inicial
+        estados = '$' + definicion[1]
+        funcionTransicion = definicion[2]
+        estadosAceptados = [len(definicion[1])]
+        automatas.append(Automata(idToken, estados, funcionTransicion, estadosAceptados))
     return automatas
 
 
