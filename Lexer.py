@@ -15,7 +15,6 @@ class Automata:
     def reset(self):
         self.estadoActual = 0
 
-
     def trampa(self):
         # Se utiliza None para identificar el estado trampa
         return self.estadoActual is None
@@ -32,6 +31,33 @@ def transicionDefault(estados, estadoActual, input):
         return estadoActual + 1
     else:
         return None
+
+def transicionAlfabetica(estados, estadoActual, input):
+
+    if estadoActual is None:
+        return None
+
+    if (input.isalpha()):
+        if estadoActual == 0:
+            return estadoActual + 1
+        else:
+            return estadoActual
+    else:
+        return None
+
+def transicionNumerica(estados, estadoActual, input):
+
+    if estadoActual is None:
+        return None
+
+    if (input.isdigit()):
+        if estadoActual == 0:
+            return estadoActual + 1
+        else:
+            return estadoActual
+    else:
+        return None
+
 
 # Todo arranca aca
 def tokenizer(string):
@@ -121,6 +147,8 @@ definicionTokens = [
     ("Type", "int", transicionDefault),
     ("Type", "float", transicionDefault),
     ("Loop", "for", transicionDefault),
-    ("Loop", "while", transicionDefault)
+    ("Loop", "while", transicionDefault),
+    ("Id", "a", transicionAlfabetica),
+    ("Num", "1", transicionNumerica),
 ]
 
