@@ -89,38 +89,32 @@ def tokenizer(string):
 
         for char in string:
 
-            nuevosAceptados = []
             if  acumuladorInputs == "" and char.isspace():
                 continue
 
-            for automata in automatas:
-                automata.input(char)
-                if automata.isAceptado():
-                    nuevosAceptados.append(automata)
+            nuevosAceptados = automatasEnAceptado(automatas, char)
 
-            todosTrampa = True
-            for automata in automatas:
-                if not automata.trampa():
-                    todosTrampa = False
-                    break
+            todosTrampa = todosEnEstadoTrampa(automatas)
 
             if todosTrampa:
+
+                # Si todos los automatas caen en estado trampa dos veces consecutivas lanzo una Excepcion
                 if acumuladorInputs == "":
                     raise Exception('Error')
-                else:
 
+                # Si es la primera vez que todos los automatas caen en estado trampa guardo el 
+                # identificador (token) del primer automata que estuviese en estado aceptado
+                # antes de que todos cayeran al estado trampa
+                else:
                     tokens.append((aceptados[0].identificador, acumuladorInputs))
-                    for automata in automatas:
-                        automata.reset()
+                    resetAutomatas(automatas)
                     aceptados = []
                     acumuladorInputs = ""
 
+                    # Si el caracter que hizo caer a todos los automatas en trampa no es
+                    # un espacio lo vuelvo a consumir para no perderlo
                     if not char.isspace():
-                        for automata in automatas:
-                            automata.input(char)
-                            if automata.isAceptado():
-                                nuevosAceptados.append(automata)
-
+                        nuevosAceptados = automatasEnAceptado(automatas, char)
 
             # Se utiliza strip() para no agregar espacios ya que NO es util tenerlos en cuenta a la
             # hora de saber si hemos consumido caracteres luego de haber agregado un token a la lista 
@@ -130,6 +124,26 @@ def tokenizer(string):
         return tokens
     except Exception as error:
         return str(error)
+
+def todosEnEstadoTrampa(automatas):
+    todosTrampa = True
+    for automata in automatas:
+        if not automata.trampa():
+            todosTrampa = False
+            break
+    return todosTrampa
+
+def automatasEnAceptado(automatas, char):
+    nuevosAceptados = []
+    for automata in automatas:
+        automata.input(char)
+        if automata.isAceptado():
+            nuevosAceptados.append(automata)
+    return nuevosAceptados
+
+def resetAutomatas(automatas):
+    for automata in automatas:
+        automata.reset()
 
 def createAutomatas():
     automatas = []
@@ -142,7 +156,7 @@ def createAutomatas():
         automatas.append(Automata(idToken, estados, funcionTransicion, estadoAceptado))
     return automatas
 
-#TODO Agregar definiciones de tokens que no utilizan transicionDefault
+# Formato: ("TokenId", estados, funcionDeTransicion)
 definicionTokens = [
     ("Asign", "=", transicionDefault),
     ("Asign", ":=", transicionDefault),
