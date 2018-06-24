@@ -1,68 +1,77 @@
 class Automata:
-    def __init__(self, identificador, estados, funcionTransicion, estadosAceptados):
+    def __init__(self, identificador, estados, funcionTransicion, estadoAceptado):
         self.identificador = identificador
         self.estados = estados
         self.funcionTransicion = funcionTransicion
-        self.estadosAceptados = estadosAceptados
+        self.estadoAceptado = estadoAceptado
+        self.estadoInicial = 0
         self.reset()
 
     def input(self, char):
-        self.estadoActual = self.funcionTransicion(self.estados, self.estadoActual, char)
+        self.estadoActual = self.funcionTransicion(self, char)
 
     def isAceptado(self):
-        return self.estadoActual in self.estadosAceptados
+        return self.estadoActual == self.estadoAceptado
 
     def reset(self):
-        self.estadoActual = 0
+        self.estadoActual = self.estadoInicial
 
     def trampa(self):
         # Se utiliza None para identificar el estado trampa
         return self.estadoActual is None
 
-def transicionDefault(estados, estadoActual, input):
+    def getCharEstado(self, estado):
+        if estado is None:
+            return None
+        else:
+            return self.estados[estado]
 
-    if estadoActual is None:
+def transicionDefault(automata, input):
+
+    if automata.estadoActual is None:
         return None
 
-    if len(estados) <= estadoActual + 1:
+    proximoEstado = automata.estadoActual + 1
+
+    if len(automata.estados) <= proximoEstado:
         return None
 
-    if estados[estadoActual + 1] == input:
-        return estadoActual + 1
+    if automata.getCharEstado(proximoEstado) == input:
+        return proximoEstado
     else:
         return None
 
-def transicionAlfabetica(estados, estadoActual, input):
+def transicionAlfabetica(automata, input):
 
-    if estadoActual is None:
+    if automata.estadoActual is None:
         return None
 
-    if estadoActual != 0:
+    if automata.estadoActual == automata.estadoAceptado:
         if input.isdigit():
             raise Exception('Error')
 
-    if (input.isalpha()):
-        if estadoActual == 0:
-            return estadoActual + 1
+    if input.isalpha():
+        if automata.estadoActual == automata.estadoInicial:
+            return automata.estadoActual + 1
         else:
-            return estadoActual
+            return automata.estadoActual
     else:
         return None
 
-def transicionNumerica(estados, estadoActual, input):
+def transicionNumerica(automata, input):
 
-    if estadoActual is None:
+    if automata.estadoActual is None:
         return None
 
-    if estadoActual != 0:
+    if automata.estadoActual == automata.estadoAceptado:
         if input.isalpha():
             raise Exception('Error')
 
-    if (input.isdigit()):
-        if estadoActual == 0:
-            return estadoActual + 1
+    if input.isdigit():
+        if automata.estadoActual == automata.estadoInicial:
+            return automata.estadoActual + 1
         else:
-            return estadoActual
+            return automata.estadoActual
     else:
         return None
 
@@ -97,7 +106,6 @@ def tokenizer(string):
 
             if todosTrampa:
                 if acumuladorInputs == "":
-                    # return "Error"
                     raise Exception('Error')
                 else:
 
@@ -130,8 +138,8 @@ def createAutomatas():
         # Agrego $ como estado inicial
         estados = '$' + definicion[1]
         funcionTransicion = definicion[2]
-        estadosAceptados = [len(definicion[1])]
-        automatas.append(Automata(idToken, estados, funcionTransicion, estadosAceptados))
+        estadoAceptado = len(definicion[1])
+        automatas.append(Automata(idToken, estados, funcionTransicion, estadoAceptado))
     return automatas
 
 #TODO Agregar definiciones de tokens que no utilizan transicionDefault
