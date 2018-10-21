@@ -32,7 +32,7 @@ definicionProducciones = {
 	'Funcion': [
 		[
 			'Tipo',
-			'Identificador',
+			'Id',
 			'ParOp',
 			'ListaArgumentos',
 			'ParCl',
@@ -45,14 +45,14 @@ definicionProducciones = {
 		],
 		[
 			'Argumento'
-			'Punct',
+			'PunctCol',
 			'ListaArgumentos',
 		]
 	],
 	'Argumento': [
 		[
 			'Tipo',
-			'Identificador'
+			'Id'
 		]
 	],
 	'Declaracion': [
@@ -63,12 +63,12 @@ definicionProducciones = {
 	],
 	'ListaIdent': [
 		[
-			'Identificador',
-			'Punct',
+			'Id',
+			'PunctCol',
 			'ListaIdent'
 		],
 		[
-			'Identificador'
+			'Id'
 		]
 	],
 	'Sentencia': [
@@ -80,7 +80,7 @@ definicionProducciones = {
 		],
 		[
 			'Expr',
-			'Punct'
+			'PunctSemiCol'
 		],
 		[
 			'SentIf'
@@ -91,19 +91,224 @@ definicionProducciones = {
 		[
 			'Declarcion'
 		]
-	]
-	'Tipo': [
+	],
+	'SentFor': [
 		[
-			'Type2', #Cambiar aca y en lexer
-			'Type' #Cambiar aca y en lexer
+			'LoopFor',
+			'ParOp',
+			'Expr',
+			'PunctCol',
+			'Expr',
+			'PunctCol',
+			'Expr',
+			'ParCl',
+			'Sentencia'
+		],
+		[
+			'LoopFor',
+			'ParOp',
+			'Expr',
+			'PunctCol',
+			'PunctCol',
+			'Expr',
+			'ParCl',
+			'Sentencia'
+		],
+		[
+			'LoopFor',
+			'ParOp',
+			'Expr',
+			'PunctCol',
+			'Expr',
+			'PunctCol',
+			'ParCl',
+			'Sentencia'
+		],
+		[
+			'LoopFor',
+			'ParOp',
+			'Expr',
+			'PunctCol',
+			'PunctCol',
+			'ParCl',
+			'Sentencia'
 		]
 	],
+	'SentWhile': [
+		[
+			'LoopWhile',
+			'ParOp',
+			'Expr',
+			'ParCl',
+			'Sentencia'
+		]
+	],
+	'SentIf': [
+		[
+			'CondIf',
+			'ParOp',
+			'Expr',
+			'ParCl',
+			'Sentencia',
+			'CondElse',
+			'Sentencia'
+		],
+		[
+			'CondIf',
+			'ParOp',
+			'Expr',
+			'ParCl',
+			'Sentencia'
+		]
+	],
+	'SentenciaCompuesta': [
+		[
+			'BrcOp',
+			'ListaSentencia',
+			'BrcCl'
+		]
+	],
+	'ListaSentencia': [
+		[
+			'Sentencia',
+			'ListaSentencia'
+		],
+		[
+			'Sentencia'
+		]
+	],
+	'Expr': [
+		[
+			'Id',
+			'Asign',
+			'Expr'
+		],
+		[
+			'ValorR'
+		]
+	],
+	'ValorR': [
+		[
+			'Mag',
+			'X'
+		],
+		[
+			'Mag'
+		]
+	],
+	'X': [
+		[
+			'OpRel',
+			'Mag',
+			'X'
+		],
+		[
+			'OpRel',
+			'Mag'
+		]
+	],
+	'Tipo': [
+		[
+			'TypeInt',
+			'TypeFloat'
+		]
+	],
+	'Mag': [
+		[
+			'Termino',
+			'Mag2',
+		],
+		[
+			'Termino'
+		]
+	],
+	'Mag2': [
+		[
+			'OpMatSubs',
+			'Termino',
+			'Mag2'
+		],
+		[
+			'OpMatAdd',
+			'Termino',
+			'Mag2'
+		],
+		[
+			'OpMatAdd',
+			'Termino'
+		],
+		[
+			'OpMatSubs',
+			'Termino'
+		]
+	],
+	'Termino': [
+		[
+			'Factor',
+			'Termino2'
+		],
+		[
+			'Factor'
+		]
+	],
+	'Termino2': [
+		[
+			'OpMatDiv',
+			'Factor',
+			'Termino2'
+		],
+		[
+			'OpMatMult',
+			'Factor',
+			'Termino2'
+		],
+		[
+			'OpMatDiv',
+			'Factor',
+		],
+		[
+			'OpMatMult',
+			'Factor',
+		]
+	],
+	'Factor': [
+		[
+			'ParOp',
+			'Expr',
+			'ParCl'
+		],
+		[
+			'OpMatAdd',
+			'Factor',
+		],
+		[
+			'OpMatSubs',
+			'Factor'
+		],
+		[
+			'Num'
+		],
+		[
+			'Id'
+		]
+	],
+	'Asign': None,
+	'OpRel': None,
+	'OpMatAdd': None,
+	'OpMatSubs': None,
+	'OpMatMult': None,
+	'OpMatDiv': None,
+	'PunctCol': None,
+	'PunctSemiCol': None,
 	'ParOp': None,
 	'ParCl': None,
-	'Identificador': None,
-	'Punct': None,
-	'Type': None,
-	'Type2': [['p']],
-	'p': None
-
+	'BrcOp': None,
+	'BrcCl': None,
+	'CondIf': None,
+	'CondElse': None,
+	'TypeInt': None,
+	'TypeFloat': None,
+	'LoopFor': None,
+	'LoopWhile': None,
+	'Id': None
 }
