@@ -1,3 +1,5 @@
+import tokenizer from Lexer
+
 class ParserStatus:
 	def __init__(self, posicion = 0, transiciones = []):
 		self.posicion = posicion
@@ -14,8 +16,8 @@ def consume(tokens, produccionesTodas, produccionUsar, ParserStatus):
 		else:
 			return False
 	for produccion in producciones:
-		for coso in produccion:
-			if (consume(tokens, produccionesTodas, coso, ParserStatus)):
+		for termino in produccion:
+			if (consume(tokens, produccionesTodas, termino, ParserStatus)):
 				ParserStatus.transiciones.append(produccionUsar)
 				return True
 			else:
@@ -24,7 +26,8 @@ def consume(tokens, produccionesTodas, produccionUsar, ParserStatus):
 	return False
 
 
-def parser(tokens):
+def parser(cadena):
+	tokens = tokenizer(cadena)
 	status = ParserStatus()
 	return consume(tokens, definicionProducciones, 'Argumento', status)
 
