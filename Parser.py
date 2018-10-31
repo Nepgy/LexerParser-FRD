@@ -22,20 +22,23 @@ def pni(tokens, produccionesGramatica, noTerminalParaEvaluar, ParserStatus):
 			return True
 		else:
 			ParserStatus.posicion = posicionOriginal
-	print('ParserStatus.transiciones: ', ParserStatus.transiciones)
 	return False
 
 def procesar(tokens, produccionesGramatica, produccion, ParserStatus):
 	for noTerminal in produccion:
-		if (produccionesGramatica[noTerminal] is None):
-
-			if (noTerminal == tokens[ParserStatus.posicion][0]):
-				ParserStatus.posicion += 1
-				return True
+		if esTerminalValido(tokens, produccionesGramatica, noTerminal, ParserStatus):
+			return True
 
 		estadoPni = pni(tokens, produccionesGramatica, noTerminal, ParserStatus)
 		if estadoPni:
 			return True
+	return False
+
+def esTerminalValido(tokens, produccionesGramatica, posibleTerminal, parserStatus):
+	if (produccionesGramatica[posibleTerminal] is None):
+			if (posibleTerminal == tokens[parserStatus.posicion][0]):
+				parserStatus.posicion += 1
+				return True
 	return False
 
 def agregarTransicion(ParserStatus, parteIzq, ParteDer):
@@ -184,6 +187,10 @@ definicionProducciones = {
 		[
 			'BrcOp',
 			'ListaSentencia',
+			'BrcCl'
+		],
+		[
+			'BrcOp',
 			'BrcCl'
 		]
 	],
