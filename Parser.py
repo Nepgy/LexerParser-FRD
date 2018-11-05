@@ -1,35 +1,54 @@
-import tokenizer from Lexer
+from Lexer import tokenizer
 
 class ParserStatus:
 	def __init__(self, posicion = 0, transiciones = []):
-		self.posicion = posicion
-		self.transiciones = transiciones
+		self.posicion = None
+		self.transiciones = None
+		self.posicionOriginal = posicion
+		self.transicionesOriginal = transiciones
+		self.reset()
 
-def consume(tokens, produccionesTodas, produccionUsar, ParserStatus):
-	# ParserStatus.transiciones.append(produccionUsar)
-	producciones =  produccionesTodas[produccionUsar]
-	if (producciones is None):
-		if (produccionUsar == tokens[ParserStatus.posicion][0]):
-			ParserStatus.transiciones.append(produccionUsar)
-			# ParserStatus.posicion += 1
+	def reset(self):
+		self.posicion = self.posicionOriginal
+		self.transiciones = self.transicionesOriginal
+
+def pni(tokens, produccionesGramatica, noTerminalParaEvaluar, ParserStatus):
+	posicionOriginal = ParserStatus.posicion
+	producciones =  produccionesGramatica[noTerminalParaEvaluar]
+	for produccion in producciones:
+		estadoProcesar = procesar(tokens, produccionesGramatica, produccion, ParserStatus)
+		if estadoProcesar:
+			agregarTransicion(ParserStatus, noTerminalParaEvaluar, produccion)
 			return True
 		else:
-			return False
-	for produccion in producciones:
-		for termino in produccion:
-			if (consume(tokens, produccionesTodas, termino, ParserStatus)):
-				ParserStatus.transiciones.append(produccionUsar)
-				return True
-			else:
-				break
-	print('ParserStatus.transiciones: ', ParserStatus.transiciones)
+			ParserStatus.posicion = posicionOriginal
 	return False
 
+def procesar(tokens, produccionesGramatica, produccion, ParserStatus):
+	for noTerminal in produccion:
+		if esTerminalValido(tokens, produccionesGramatica, noTerminal, ParserStatus):
+			return True
 
-def parser(cadena):
+		estadoPni = pni(tokens, produccionesGramatica, noTerminal, ParserStatus)
+		if estadoPni:
+			return True
+	return False
+
+def esTerminalValido(tokens, produccionesGramatica, posibleTerminal, parserStatus):
+	if (produccionesGramatica[posibleTerminal] is None):
+			if (posibleTerminal == tokens[parserStatus.posicion][0]):
+				parserStatus.posicion += 1
+				return True
+	return False
+
+def agregarTransicion(ParserStatus, parteIzq, ParteDer):
+	ParserStatus.transiciones.append((parteIzq, ParteDer))
+
+def parser(cadena, status = False):
+	if not status:
+		status = ParserStatus()
 	tokens = tokenizer(cadena)
-	status = ParserStatus()
-	return consume(tokens, definicionProducciones, 'Argumento', status)
+	return pni(tokens, definicionProducciones, 'Funcion', status)
 
 definicionProducciones = {
 	'Funcion': [
@@ -168,6 +187,10 @@ definicionProducciones = {
 		[
 			'BrcOp',
 			'ListaSentencia',
+			'BrcCl'
+		],
+		[
+			'BrcOp',
 			'BrcCl'
 		]
 	],
