@@ -54,7 +54,7 @@ class Parser:
 	def getTokenActual(self):
 		return self.tokens[self.posicion][0]
 
-def main(cadena):
+def parsing(cadena):
 	parser = Parser(terminales, noTerminales)
 	tokens = tokenizer(cadena)
 	result = parser.ejecutar(tokens, 'Funcion')
