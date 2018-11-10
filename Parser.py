@@ -1,23 +1,20 @@
 from Lexer import tokenizer
 
 class Parser:
-	def __init__(self, terminales, noTerminales):
+	def __init__(self, terminales, producciones, noTerminales):
 		self.posicion = 0
 		self.error = False
 		self.transiciones = []
 		self.tokens = []
 		self.terminales = terminales
+		self.producciones = producciones
 		self.noTerminales = noTerminales
 		# self.c = 0
 
 	def pni(self, noTerminal):
-		parteDerecha = self.noTerminales[noTerminal]
+		parteDerecha = self.producciones[noTerminal]
 		posicionOriginal = self.posicion
 		for produccion in parteDerecha:
-			# print('noTerminal', noTerminal)
-			# print('parteDerecha', parteDerecha)
-			# if self.c == 50: return None #Debug Purpose
-			# self.c += 1
 			self.procesar(produccion)
 			if self.error:
 				self.posicion = posicionOriginal
@@ -33,15 +30,23 @@ class Parser:
 		# print('produccion', produccion)
 		for elemento in produccion:
 			# print('elemento', elemento)
-			if elemento in self.terminales:
+			if elemento in self.terminales and not elemento == '$':
 				if elemento == self.getTokenActual():
 					# print('OK')
+
 					self.posicion += 1
+					if elemento == '$':
+						break
 				else:
 					self.error = True
 					return False
-			else:
+			#else:
+			#		self.pni(elemento)
+			if elemento in self.noTerminales:
 				self.pni(elemento)
+			else:
+				self.error = True
+				return False
 
 	def guardarTransicion(self, parteIzquierda, parteDerecha):
 		self.transiciones.append((parteIzquierda, parteDerecha))
@@ -55,14 +60,43 @@ class Parser:
 		return self.tokens[self.posicion][0]
 
 def parsing(cadena):
-	parser = Parser(terminales, noTerminales)
+	parser = Parser(terminales, producciones, noTerminales)
 	tokens = tokenizer(cadena)
+	tokens.append(('$', 'Fin de cadena'))
 	result = parser.ejecutar(tokens, 'Funcion')
+
+	if parser.transiciones == []:
+		print('No pertenece a la gramatica')
+
 	print(result)
 	print(parser.transiciones)
-	return result
 
-noTerminales = {
+
+noTerminales = [
+	'Funcion',
+	'Tipo',
+	'ListaArgumento',
+	'SentenciaCompuesta',
+	'Argumento',
+	'Declaracion',
+	'ListaIdent',
+	'Sentencia',
+	'SentFor',
+	'SentWhile',
+	'Expr',
+	'SentIf',
+	'ListaSentencia',
+	'ValorR',
+	'Comparacion',
+	'Mag',
+	'Termino',
+	'X',
+	'Factor',
+	'Mag2',
+	'Termino2'
+]
+
+producciones = {
 	'Funcion': [
 		[
 			'Tipo',
@@ -355,3 +389,10 @@ terminales = [
 	'LoopWhile',
 	'Id'
 ]
+
+#Testing
+assert parsing('int a ( float a ) { int b }')
+assert parsing('int a ( float a ) { int b }')
+assert parsing('int')
+assert parsing('int a ( float b ) { int c }')
+assert parsing('1')
