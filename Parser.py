@@ -1,56 +1,68 @@
 from Lexer import tokenizer
 
-class ParserStatus:
-	def __init__(self, posicion = 0, transiciones = []):
-		self.posicion = None
-		self.transiciones = None
-		self.posicionOriginal = posicion
-		self.transicionesOriginal = transiciones
-		self.reset()
+class Parser:
+	def __init__(self, terminales, noTerminales):
+		self.posicion = 0
+		self.error = False
+		self.transiciones = []
+		self.tokens = []
+		self.terminales = terminales
+		self.noTerminales = noTerminales
+		# self.c = 0
 
-	def reset(self):
-		self.posicion = self.posicionOriginal
-		self.transiciones = self.transicionesOriginal
+	def pni(self, noTerminal):
+		parteDerecha = self.noTerminales[noTerminal]
+		posicionOriginal = self.posicion
+		for produccion in parteDerecha:
+			# print('noTerminal', noTerminal)
+			# print('parteDerecha', parteDerecha)
+			# if self.c == 50: return None #Debug Purpose
+			# self.c += 1
+			self.procesar(produccion)
+			if self.error:
+				self.posicion = posicionOriginal
+				# print('error')
+				self.error = False
+			else:
+				self.guardarTransicion(noTerminal, produccion)
+				break
 
-def pni(tokens, produccionesGramatica, noTerminalParaEvaluar, ParserStatus):
-	posicionOriginal = ParserStatus.posicion
-	producciones =  produccionesGramatica[noTerminalParaEvaluar]
-	for produccion in producciones:
-		estadoProcesar = procesar(tokens, produccionesGramatica, produccion, ParserStatus)
-		if estadoProcesar:
-			agregarTransicion(ParserStatus, noTerminalParaEvaluar, produccion)
-			return True
-		else:
-			ParserStatus.posicion = posicionOriginal
-	return False
+		return not self.error
 
-def procesar(tokens, produccionesGramatica, produccion, ParserStatus):
-	for noTerminal in produccion:
-		if esTerminalValido(tokens, produccionesGramatica, noTerminal, ParserStatus):
-			return True
+	def procesar(self, produccion):
+		# print('produccion', produccion)
+		for elemento in produccion:
+			# print('elemento', elemento)
+			if elemento in self.terminales:
+				if elemento == self.getTokenActual():
+					# print('OK')
+					self.posicion += 1
+				else:
+					self.error = True
+					return False
+			else:
+				self.pni(elemento)
 
-		estadoPni = pni(tokens, produccionesGramatica, noTerminal, ParserStatus)
-		if estadoPni:
-			return True
-	return False
+	def guardarTransicion(self, parteIzquierda, parteDerecha):
+		self.transiciones.append((parteIzquierda, parteDerecha))
 
-def esTerminalValido(tokens, produccionesGramatica, posibleTerminal, parserStatus):
-	if (produccionesGramatica[posibleTerminal] is None):
-			if (posibleTerminal == tokens[parserStatus.posicion][0]):
-				parserStatus.posicion += 1
-				return True
-	return False
+	def ejecutar(self, tokens, simboloInicial):
+		print('tokens', tokens)
+		self.tokens = tokens
+		return self.pni(simboloInicial)
 
-def agregarTransicion(ParserStatus, parteIzq, ParteDer):
-	ParserStatus.transiciones.append((parteIzq, ParteDer))
+	def getTokenActual(self):
+		return self.tokens[self.posicion][0]
 
-def parser(cadena, status = False):
-	if not status:
-		status = ParserStatus()
+def main(cadena):
+	parser = Parser(terminales, noTerminales)
 	tokens = tokenizer(cadena)
-	return pni(tokens, definicionProducciones, 'Funcion', status)
+	result = parser.ejecutar(tokens, 'Funcion')
+	print(result)
+	print(parser.transiciones)
+	return result
 
-definicionProducciones = {
+noTerminales = {
 	'Funcion': [
 		[
 			'Tipo',
@@ -66,7 +78,7 @@ definicionProducciones = {
 			'Argumento'
 		],
 		[
-			'Argumento'
+			'Argumento',
 			'PunctCol',
 			'ListaArgumentos',
 		]
@@ -236,6 +248,8 @@ definicionProducciones = {
 	'Tipo': [
 		[
 			'TypeInt',
+		],
+		[
 			'TypeFloat'
 		]
 	],
@@ -317,24 +331,27 @@ definicionProducciones = {
 		[
 			'Id'
 		]
-	],
-	'Asign': None,
-	'OpRel': None,
-	'OpMatAdd': None,
-	'OpMatSubs': None,
-	'OpMatMult': None,
-	'OpMatDiv': None,
-	'PunctCol': None,
-	'PunctSemiCol': None,
-	'ParOp': None,
-	'ParCl': None,
-	'BrcOp': None,
-	'BrcCl': None,
-	'CondIf': None,
-	'CondElse': None,
-	'TypeInt': None,
-	'TypeFloat': None,
-	'LoopFor': None,
-	'LoopWhile': None,
-	'Id': None
+	]
 }
+
+terminales = [
+	'Asign',
+	'OpRel',
+	'OpMatAdd',
+	'OpMatSubs',
+	'OpMatMult',
+	'OpMatDiv',
+	'PunctCol',
+	'PunctSemiCol',
+	'ParOp',
+	'ParCl',
+	'BrcOp',
+	'BrcCl',
+	'CondIf',
+	'CondElse',
+	'TypeInt',
+	'TypeFloat',
+	'LoopFor',
+	'LoopWhile',
+	'Id'
+]
