@@ -1,77 +1,100 @@
 from Lexer import tokenizer
 
-class Parser:
-	def __init__(self, terminales, producciones, noTerminales):
-		self.posicion = 0
-		self.error = False
-		self.transiciones = []
-		self.tokens = []
-		self.terminales = terminales
-		self.producciones = producciones
-		self.noTerminales = noTerminales
-		# self.c = 0
+estadoActual = {
+'tokens': [],
+'posicion': 0,
+'error': False,
+'producciones': []
+}
 
-	def pni(self, noTerminal):
-		parteDerecha = self.producciones[noTerminal]
-		posicionOriginal = self.posicion
-		for produccion in parteDerecha:
-			self.procesar(produccion)
-			if self.error:
-				self.posicion = posicionOriginal
-				# print('error')
-				self.error = False
+def inicializar(codigoFuente):
+	tokens = tokenizer(codigoFuente)
+	tokens.append(('$', 'Fin de la cadena'))
+	return tokens
+
+def resetEstado(cadena):
+	estadoActual['posicion'] = 0
+	estadoActual['tokens'] = inicializar(cadena)
+	estadoActual['producciones'] = []
+	estadoActual['error'] = False
+	return estadoActual
+
+def tokenActual():
+	return estadoActual['tokens'][estadoActual['posicion']][0]
+
+def pni(noTerminal):
+	estadoActual['error'] = True
+	parteDerecha = producciones[noTerminal]
+	for produccion in parteDerecha:
+		estadoActual['error'] = True
+		procesar(produccion)
+		if not estadoActual['error']:
+			break
+
+def procesar(produccion):
+	posicionOriginal = estadoActual['posicion']
+	estadoActual['error'] = False
+	for elemento in produccion:
+		if elemento in terminales:
+			if elemento == tokenActual():
+				estadoActual['posicion'] += 1
+				estadoActual['producciones'].append(elemento)
 			else:
-				self.guardarTransicion(noTerminal, produccion)
-				break
+				estadoActual['posicion'] = posicionOriginal
+				estadoActual['error'] = True
+		if elemento in noTerminales:
+			pni(elemento)
+		if estadoActual['error']:
+			break
 
-		return not self.error
-
-	def procesar(self, produccion):
-		# print('produccion', produccion)
-		for elemento in produccion:
-			# print('elemento', elemento)
-			if elemento in self.terminales and not elemento == '$':
-				if elemento == self.getTokenActual():
-					# print('OK')
-
-					self.posicion += 1
-					if elemento == '$':
-						break
-				else:
-					self.error = True
-					return False
-			#else:
-			#		self.pni(elemento)
-			if elemento in self.noTerminales:
-				self.pni(elemento)
-			else:
-				self.error = True
-				return False
-
-	def guardarTransicion(self, parteIzquierda, parteDerecha):
-		self.transiciones.append((parteIzquierda, parteDerecha))
-
-	def ejecutar(self, tokens, simboloInicial):
-		print('tokens', tokens)
-		self.tokens = tokens
-		return self.pni(simboloInicial)
-
-	def getTokenActual(self):
-		return self.tokens[self.posicion][0]
 
 def parsing(cadena):
-	parser = Parser(terminales, producciones, noTerminales)
-	tokens = tokenizer(cadena)
-	tokens.append(('$', 'Fin de cadena'))
-	result = parser.ejecutar(tokens, 'Funcion')
+	resetEstado(cadena)
+	pni('Funcion')
 
-	if parser.transiciones == []:
-		print('No pertenece a la gramatica')
+	if not estadoActual['error']:
+		print(estadoActual['tokens'])
+		print(estadoActual['producciones'])
+		print('Pertenece a la Gramatica')
+		return True
+	else:
+		print(estadoActual['tokens'])
+		print(estadoActual['producciones'])
+		print('No pertenece a la Gramatica')
+		return False
 
-	print(result)
-	print(parser.transiciones)
+#Terminales
+terminales = [
+	'INT',
+	'IF',
+	'IGUALDOB',
+	'PAROPEN',
+	'COMA',
+	'PARCLOSE',
+	'LLAOPEN',
+	'LLACLOSE',
+	'SUMA',
+	'ASTERISCO',
+	'MINUS',
+	'BARRA',
+	'PUNCOMA',
+	'MENOR',
+	'MAYOR',
+	'FLOAT',
+	'WHILE',
+	'FOR',
+	'IGUAL',
+	'IGUALMAY',
+	'IGUALMEN',
+	'DIF',
+	'ELSE',
+	'ID',
+	'ERROR_EXPRESION_PARCIAL',
+	'NUM',
+	'TOKEN_INCORRECTO'
+]
 
-
+#No Terminales
 noTerminales = [
 	'Funcion',
 	'Tipo',
@@ -97,302 +120,122 @@ noTerminales = [
 ]
 
 producciones = {
-	'Funcion': [
-		[
-			'Tipo',
-			'Id',
-			'ParOp',
-			'ListaArgumentos',
-			'ParCl',
-			'SentenciaCompuesta'
-		]
-	],
-	'ListaArgumentos': [
-		[
-			'Argumento'
-		],
-		[
-			'Argumento',
-			'PunctCol',
-			'ListaArgumentos',
-		]
-	],
-	'Argumento': [
-		[
-			'Tipo',
-			'Id'
-		]
-	],
-	'Declaracion': [
-		[
-			'Tipo',
-			'ListaIdent'
-		]
-	],
-	'ListaIdent': [
-		[
-			'Id',
-			'PunctCol',
-			'ListaIdent'
-		],
-		[
-			'Id'
-		]
-	],
-	'Sentencia': [
-		[
-			'SentFor'
-		],
-		[
-			'SentWhile'
-		],
-		[
-			'Expr',
-			'PunctSemiCol'
-		],
-		[
-			'SentIf'
-		],
-		[
-			'SentenciaCompuesta'
-		],
-		[
-			'Declarcion'
-		]
-	],
-	'SentFor': [
-		[
-			'LoopFor',
-			'ParOp',
-			'Expr',
-			'PunctCol',
-			'Expr',
-			'PunctCol',
-			'Expr',
-			'ParCl',
-			'Sentencia'
-		],
-		[
-			'LoopFor',
-			'ParOp',
-			'Expr',
-			'PunctCol',
-			'PunctCol',
-			'Expr',
-			'ParCl',
-			'Sentencia'
-		],
-		[
-			'LoopFor',
-			'ParOp',
-			'Expr',
-			'PunctCol',
-			'Expr',
-			'PunctCol',
-			'ParCl',
-			'Sentencia'
-		],
-		[
-			'LoopFor',
-			'ParOp',
-			'Expr',
-			'PunctCol',
-			'PunctCol',
-			'ParCl',
-			'Sentencia'
-		]
-	],
-	'SentWhile': [
-		[
-			'LoopWhile',
-			'ParOp',
-			'Expr',
-			'ParCl',
-			'Sentencia'
-		]
-	],
-	'SentIf': [
-		[
-			'CondIf',
-			'ParOp',
-			'Expr',
-			'ParCl',
-			'Sentencia',
-			'CondElse',
-			'Sentencia'
-		],
-		[
-			'CondIf',
-			'ParOp',
-			'Expr',
-			'ParCl',
-			'Sentencia'
-		]
-	],
-	'SentenciaCompuesta': [
-		[
-			'BrcOp',
-			'ListaSentencia',
-			'BrcCl'
-		],
-		[
-			'BrcOp',
-			'BrcCl'
-		]
-	],
-	'ListaSentencia': [
-		[
-			'Sentencia',
-			'ListaSentencia'
-		],
-		[
-			'Sentencia'
-		]
-	],
-	'Expr': [
-		[
-			'Id',
-			'Asign',
-			'Expr'
-		],
-		[
-			'ValorR'
-		]
-	],
-	'ValorR': [
-		[
-			'Mag',
-			'X'
-		],
-		[
-			'Mag'
-		]
-	],
-	'X': [
-		[
-			'OpRel',
-			'Mag',
-			'X'
-		],
-		[
-			'OpRel',
-			'Mag'
-		]
-	],
-	'Tipo': [
-		[
-			'TypeInt',
-		],
-		[
-			'TypeFloat'
-		]
-	],
-	'Mag': [
-		[
-			'Termino',
-			'Mag2',
-		],
-		[
-			'Termino'
-		]
-	],
-	'Mag2': [
-		[
-			'OpMatSubs',
-			'Termino',
-			'Mag2'
-		],
-		[
-			'OpMatAdd',
-			'Termino',
-			'Mag2'
-		],
-		[
-			'OpMatAdd',
-			'Termino'
-		],
-		[
-			'OpMatSubs',
-			'Termino'
-		]
-	],
-	'Termino': [
-		[
-			'Factor',
-			'Termino2'
-		],
-		[
-			'Factor'
-		]
-	],
-	'Termino2': [
-		[
-			'OpMatDiv',
-			'Factor',
-			'Termino2'
-		],
-		[
-			'OpMatMult',
-			'Factor',
-			'Termino2'
-		],
-		[
-			'OpMatDiv',
-			'Factor',
-		],
-		[
-			'OpMatMult',
-			'Factor',
-		]
-	],
-	'Factor': [
-		[
-			'ParOp',
-			'Expr',
-			'ParCl'
-		],
-		[
-			'OpMatAdd',
-			'Factor',
-		],
-		[
-			'OpMatSubs',
-			'Factor'
-		],
-		[
-			'Num'
-		],
-		[
-			'Id'
-		]
-	]
-}
+				'Funcion': [
+						['Tipo','ID','PAROPEN','ListaArgumento','PARCLOSE','SentenciaCompuesta']
+				],
+				'ListaArgumento': [
+						['Argumento'],
+						['Argumento','COMA','ListaArgumento']
+				],
+				'Argumento': [
+						['Tipo','ID']
+				],
+				'Declaracion': [
+						['Tipo','ListaIdent']
+				],
+				'Tipo': [
+						['INT'],
+						['FLOAT']
+				],
+				'ListaIdent': [
+						['ID'],
+						['ID','COMA','ListaIdent']
+				],
+				'Sentencia': [
+						['Declaracion'],
+						['SentFor'],
+						['SentWhile'],
+						['Expr'],
+						['SentIf'],
+						['SentenciaCompuesta']
+				],
+				'SentFor': [
+						['FOR','PAROPEN','Expr','COMA','Expr','COMA','Expr','PARCLOSE','Sentencia'],
+						['FOR','PAROPEN','Expr','COMA','COMA','Expr','PARCLOSE','Sentencia'],
+						['FOR','PAROPEN','Expr','COMA','Expr','COMA','PARCLOSE','Sentencia'],
+						['FOR','PAROPEN','Expr','COMA','COMA','PARCLOSE','Sentencia']
+				],
+				'SentWhile': [
+						['WHILE','PAROPEN','Expr','PARCLOSE','Sentencia']
+				],
+				'SentIf': [
+						['IF','PAROPEN','Expr','PARCLOSE','Sentencia','ELSE','PAROPEN','Sentencia','PARCLOSE'],
+						['IF','PAROPEN','Expr','PARCLOSE','Sentencia']
+				],
+				'SentenciaCompuesta': [
+						['LLAOPEN','ListaSentencia','LLACLOSE']
+				],
+				'ListaSentencia': [
+						['Sentencia'],['Sentencia','ListaSentencia']
+				],
+				'Expr': [
+						['ValorR'],
+						['ID','IGUAL','Expr']
+				],
+				'ValorR': [
+						['Mag'],
+						['Mag','X']
+				],
+				'X': [
+						['Comparacion','Mag'],
+						['Comparacion','Mag','X']
+				],
+				'Comparacion': [
+						['IGUALDOB'],
+						['MAYOR'],
+						['MENOR'],
+						['IGUALMAY'],
+						['IGUALMEN'],
+						['DIF']
+				],
+				'Mag': [
+						['Termino'],
+						['Termino','Mag2']
+				],
+				'Mag2': [
+						['MINUS','Termino'],
+						['SUMA','Termino'],
+						['MINUS','Termino','Mag2'],
+						['SUMA','Termino','Mag2']
+				],
+				'Termino': [
+						['Factor'],
+						['Factor','Termino']
+				],
+				'Termino2': [
+						['BARRA','Factor'],
+						['ASTERISCO','Factor'],
+						['BARRA','Factor','Termino2'],
+						['ASTERISCO','Factor','Termino2']
+				],
+				'Factor': [
+						['NUM'],
+						['ID'],
+						['PAROPEN','Expr','PARCLOSE'],
+						['SUMA','Factor'],
+						['MINUS','Factor']
+				]
+			}
 
-terminales = [
-	'Asign',
-	'OpRel',
-	'OpMatAdd',
-	'OpMatSubs',
-	'OpMatMult',
-	'OpMatDiv',
-	'PunctCol',
-	'PunctSemiCol',
-	'ParOp',
-	'ParCl',
-	'BrcOp',
-	'BrcCl',
-	'CondIf',
-	'CondElse',
-	'TypeInt',
-	'TypeFloat',
-	'LoopFor',
-	'LoopWhile',
-	'Id'
-]
-
+			
 #Testing
-assert parsing('int a ( float a ) { int b }')
-assert parsing('int a ( float a ) { int b }')
-assert parsing('int')
-assert parsing('int a ( float b ) { int c }')
-assert parsing('1')
+print('Test 1')
+parsing('int hola ( float beta ) { 34 }') == True
+print('Test 2')
+parsing('float variable (float var) { if then }') == False
+print('Test 3')
+parsing('int Chocolate == rico') == False
+print('Test 4')
+parsing('float var ( float ab ) { abc }') == True
+print('Test 5')
+parsing('variable int (variable float)') == False
+print('Test 6')
+parsing('float word ( int var ) { while ( 25 ) hola }') == True
+print('Test 7')
+parsing('int a (float hola){ab}') == True
+print('Test 8')
+parsing('int a ( float b ) { int c }') == True
+print('Test 9')
+parsing('int hola ( int var , for ) { 25 }') == False
+print('Test 10')
+parsing('float variable ( int variable ) { float var }') == True

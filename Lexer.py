@@ -115,7 +115,7 @@ def tokenizer(string):
 
 
             # Se utiliza strip() para no agregar espacios ya que NO es util tenerlos en cuenta a la
-            # hora de saber si hemos consumido caracteres luego de haber agregado un token a la lista 
+            # hora de saber si hemos consumido caracteres luego de haber agregado un token a la lista
             acumuladorInputs += char.strip()
             aceptados = nuevosAceptados
 
@@ -137,30 +137,31 @@ def createAutomatas():
 #TODO Agregar definiciones de tokens que no utilizan transicionDefault
 definicionTokens = [
     # ("Asign", "=", transicionDefault),
-    ("Asign", ":=", transicionDefault),
-    ("OpRel", "<", transicionDefault),
-    ("OpRel", ">", transicionDefault),
-    ("OpRel", "==", transicionDefault),
-    ("OpRel", "!=", transicionDefault),
-    ("OpRel", "<=", transicionDefault),
-    ("OpRel", ">=", transicionDefault),
-    ("OpMatAdd", "+", transicionDefault),
-    ("OpMatSubs", "-", transicionDefault),
-    ("OpMatMult", "*", transicionDefault),
-    ("OpMatDiv", "/", transicionDefault),
-    ("PunctCol", ",", transicionDefault),
-    ("PunctSemiCol", ";", transicionDefault),
-    ("ParOp", "(",transicionDefault),
-    ("ParCl", ")",transicionDefault),
-    ("BrcOp", "{",transicionDefault),
-    ("BrcCl", "}", transicionDefault),
-    ("CondIf", "if", transicionDefault),
-    ("CondElse", "else", transicionDefault),
-    ("TypeInt", "int", transicionDefault),
-    ("TypeFloat", "float", transicionDefault),
-    ("LoopFor", "for", transicionDefault),
-    ("LoopWhile", "while", transicionDefault),
-    ("Id", "a", transicionAlfabetica),
-    ("Num", "1", transicionNumerica),
+    ("IGUAL", ":=", transicionDefault),
+    ("MENOR", "<", transicionDefault),
+    ("MAYOR", ">", transicionDefault),
+    ("IGUALDOB", "==", transicionDefault),
+    ("DIF", "!=", transicionDefault),
+    ("IGUALMEN", "<=", transicionDefault),
+    ("IGUALMAY", ">=", transicionDefault),
+    ("SUMA", "+", transicionDefault),
+    ("MINUS", "-", transicionDefault),
+    ("ASTERISCO", "*", transicionDefault),
+    ("BARRA", "/", transicionDefault),
+    ("COMA", ",", transicionDefault),
+    ("PUNCOMA", ";", transicionDefault),
+    ("PAROPEN", "(",transicionDefault),
+    ("PARCLOSE", ")",transicionDefault),
+    ("LLAOPEN", "{",transicionDefault),
+    ("LLACLOSE", "}", transicionDefault),
+    ("IF", "if", transicionDefault),
+    ("ELSE", "else", transicionDefault),
+    ("INT", "int", transicionDefault),
+    ("FLOAT", "float", transicionDefault),
+    ("FOR", "for", transicionDefault),
+    ("WHILE", "while", transicionDefault),
+    ("ID", "a", transicionAlfabetica),
+    ("NUM", "1", transicionNumerica),
+    # ("ERROR_EXPRESION_PARCIAL",ERROR_EXPRESION_PARCIAL),
+    #("TOKEN_INCORRECTO",TOKEN_INCORRECTO)
 ]
-
